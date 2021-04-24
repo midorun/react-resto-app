@@ -1,10 +1,11 @@
 import React from 'react';
 import { MainPage, CartPage } from '../pages';
 import AppHeader from '../app-header';
-
+import WithRestoService from '../hoc/with-resto-service'
 import Background from './food-bg.jpg';
 
-const App = () => {
+const App = ({ RestoService }) => {
+  console.log(RestoService.getMenuItems());
   return (
     <div
       style={{ background: `url(${Background}) center center/cover no-repeat` }} className="app"
@@ -16,4 +17,4 @@ const App = () => {
   )
 }
 
-export default App;
+export default WithRestoService()(App);
