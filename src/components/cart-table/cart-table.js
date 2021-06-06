@@ -1,20 +1,46 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { cartDeletedItem, cartCreateOrder } from '../../actions'
+import CartItem from './cart-item/cart-item';
+import WithRestoService from '../hoc/with-resto-service'
+// import moduleName from '../../services/resto-service';
 import './cart-table.scss';
 
-const CartTable = () => {
-    return (
-        <>
-            <div className="cart__title">Ваш заказ:</div>
-            <div className="cart__list">
-                <div className="cart__item">
-                    <img src="https://static.1000.menu/img/content/21458/-salat-cezar-s-kr-salat-cezar-s-krevetkami-s-maionezom_1501173720_1_max.jpg" className="cart__item-img" alt="Cesar salad"></img>
-                    <div className="cart__item-title">Cesar salad</div>
-                    <div className="cart__item-price">12$</div>
-                    <div className="cart__close">&times;</div>
-                </div>
-            </div>
-        </>
-    );
+const CartTable = ({ cartItems, cartDeletedItem, cartCreateOrder, RestoService }) => {
+
+  const handleOrderButton = (cartItems) => {
+    cartCreateOrder()
+    RestoService.addOrderToDB(cartItems).then(res => console.log(res))
+  }
+
+  return (
+    <>
+      <div className="cart__title">Ваш заказ:</div>
+      <div className="cart__list">
+        {
+          cartItems.map(cartItem => <CartItem key={cartItem.id} cartItem={cartItem} onCartDeleteItem={cartDeletedItem} />)
+        }
+      </div>
+
+      {
+        cartItems.length ?
+          <button className="cart__submit" onClick={() => handleOrderButton(cartItems)}>Заказать</button> :
+          null
+      }
+
+    </>
+  );
 };
 
-export default CartTable;
+const mapStateToProps = ({ cartItems }) => {
+  return {
+    cartItems
+  }
+}
+
+const mapDispatchToProps = {
+  cartDeletedItem,
+  cartCreateOrder
+}
+
+export default WithRestoService()(connect(mapStateToProps, mapDispatchToProps)(CartTable));
